@@ -8,13 +8,12 @@ type TileCardProps = {
   href: string;
   title: string;
   icon: ReactNode;
-  tone?: "black" | "red" | "neutral";
+  tone?: "black" | "red" | "neutral"; // kept for API compatibility
   external?: boolean;
-  iconVariant?: "default" | "image"; // keeps your old API
-  // NEW:
-  variant?: "default" | "spotlight";  // use "spotlight" for Navigate/Maps
+  iconVariant?: "default" | "image";
+  variant?: "default" | "spotlight"; // "spotlight" for Navigate / Maps
   subtitle?: string;
-  badge?: ReactNode | string;         // "Start here" / "Resume"
+  badge?: ReactNode | string;
   status?: "open" | "closed" | "updated";
   className?: string;
 };
@@ -37,18 +36,33 @@ export default function TileCard({
     ? { href, target: "_blank", rel: "noopener noreferrer" }
     : { href };
 
-  // ── Spotlight (premium hero) ──────────────────────────────────────────────
+  // ── Subtle tone helpers for default cards ─────────────────────────────────
+  const borderTone =
+    tone === "black"
+      ? "border-slate-900/15 hover:border-slate-900/30 focus-visible:ring-slate-300/70"
+      : "border-slate-200 hover:border-slate-300 focus-visible:ring-slate-200/80";
+
+  const avatarTone =
+    tone === "black"
+      ? "bg-slate-900"
+      : "bg-slate-900"; // neutral, calm dark avatar
+
+  // ── Spotlight (Navigate / Maps) — keep red styling ────────────────────────
   if (variant === "spotlight") {
     const dot =
-      status === "closed" ? "bg-amber-500" :
-      status === "updated" ? "bg-sky-500" :
-      status ? "bg-emerald-500" : "";
+      status === "closed"
+        ? "bg-amber-500"
+        : status === "updated"
+        ? "bg-sky-500"
+        : status
+        ? "bg-emerald-500"
+        : "";
 
     return (
       <Wrapper
         {...wrapperProps}
         className={[
-          "group relative isolate overflow-hidden rounded-2xl",
+          "group relative isolate overflow-hidden rounded-2xl h-full",
           "ring-1 ring-slate-200/70 shadow-sm",
           "bg-gradient-to-br from-white to-slate-50",
           "transition hover:shadow-md focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200",
@@ -56,7 +70,7 @@ export default function TileCard({
         ].join(" ")}
         aria-label={title}
       >
-        {/* gradient hairline */}
+        {/* gradient hairline (red) */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-2xl p-[1px]
@@ -69,7 +83,7 @@ export default function TileCard({
           className="pointer-events-none absolute inset-[1px] rounded-[calc(theme(borderRadius.2xl)-1px)]
                      bg-gradient-to-br from-white to-slate-50"
         />
-        {/* soft grid + glow */}
+        {/* soft grid + red glow */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-2xl
@@ -82,9 +96,11 @@ export default function TileCard({
         />
 
         {/* content */}
-        <div className="relative z-10 grid min-h-[116px] grid-cols-[auto_1fr_auto] items-center gap-4 p-6">
+        <div className="relative z-10 grid min-h-[116px] h-full grid-cols-[auto_1fr_auto] items-center gap-4 p-6">
           <div className="grid h-12 w-12 place-items-center rounded-xl bg-slate-900 text-white ring-1 ring-slate-900/10 shadow-sm">
-            <span className="text-xl" aria-hidden>{icon}</span>
+            <span className="text-xl" aria-hidden>
+              {icon}
+            </span>
           </div>
 
           <div className="min-w-0">
@@ -97,14 +113,23 @@ export default function TileCard({
               {status && (
                 <span className="inline-flex items-center gap-1 text-[11px] text-slate-600">
                   <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
-                  {status === "updated" ? "Updated" : status === "closed" ? "Closed" : "Open"}
+                  {status === "updated"
+                    ? "Updated"
+                    : status === "closed"
+                    ? "Closed"
+                    : "Open"}
                 </span>
               )}
             </div>
-            <div className="mt-1 text-[22px] font-semibold tracking-tight text-slate-900">
+            {/* full title, can wrap */}
+            <div className="mt-1 text-[22px] font-semibold tracking-tight text-slate-900 whitespace-normal break-words">
               {title}
             </div>
-            {subtitle && <p className="mt-0.5 text-[13.5px] text-slate-600 line-clamp-2">{subtitle}</p>}
+            {subtitle && (
+              <p className="mt-0.5 text-[13.5px] text-slate-600 line-clamp-2">
+                {subtitle}
+              </p>
+            )}
           </div>
 
           <div className="ml-2">
@@ -121,23 +146,49 @@ export default function TileCard({
     );
   }
 
-  // ── Default (original) ────────────────────────────────────────────────────
-  const tile =
-    "group block rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,.06)] hover:shadow-[0_16px_40px_rgba(0,0,0,.10)] transition";
+  // ── Default cards (Emergency, Canvas, Student Portal, etc.) ───────────────
+  const tileBase =
+    "group block h-full min-h-[88px] rounded-2xl bg-white/95 backdrop-blur-sm " +
+    "border shadow-[0_8px_24px_rgba(15,23,42,0.06)] hover:shadow-[0_16px_40px_rgba(15,23,42,0.10)] " +
+    "transition focus-visible:outline-none focus-visible:ring-4";
+
   const darkAvatar =
-    "inline-grid h-10 w-10 place-items-center rounded-full bg-slate-900 text-white";
+    "inline-grid h-10 w-10 place-items-center rounded-full text-white shadow-sm";
   const imageBadge =
     "inline-grid h-10 w-10 place-items-center rounded-full bg-white ring-1 ring-slate-200/70 shadow-sm";
 
   return (
-    <Wrapper className={`${tile} ${className || ""}`} {...wrapperProps}>
-      <div className="flex items-center gap-3">
-        <span className={iconVariant === "image" ? imageBadge : darkAvatar}>{icon}</span>
+    <Wrapper
+      className={`${tileBase} ${borderTone} ${className || ""}`}
+      {...wrapperProps}
+    >
+      <div className="flex h-full items-center gap-3">
+        <span
+          className={
+            iconVariant === "image"
+              ? imageBadge
+              : `${darkAvatar} ${avatarTone}`
+          }
+        >
+          {icon}
+        </span>
+
         <div className="flex-1 min-w-0">
-          <div className="text-base font-medium text-slate-900 truncate">{title}</div>
-          {subtitle && <div className="mt-0.5 text-[13.5px] text-slate-600 line-clamp-2">{subtitle}</div>}
+          {/* title: full, wraps, no ellipsis */}
+          <div className="text-sm sm:text-base font-semibold text-slate-900 leading-snug whitespace-normal break-words">
+            {title}
+          </div>
+
+          {subtitle && (
+            <div className="mt-0.5 text-[13.5px] text-slate-600 line-clamp-2">
+              {subtitle}
+            </div>
+          )}
         </div>
-        <span className="ml-auto text-slate-300 transition group-hover:text-slate-400">→</span>
+
+        <span className="ml-auto text-slate-300 transition group-hover:text-slate-400">
+          →
+        </span>
       </div>
     </Wrapper>
   );
