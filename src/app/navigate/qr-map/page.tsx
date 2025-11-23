@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import SubpageLayout from '@/components/SubpageLayout';
 import { FaMapMarkerAlt, FaWalking } from 'react-icons/fa';
@@ -72,7 +72,7 @@ function findLocation(key: string | null): Location | undefined {
 
 /* ===== Page component ===== */
 
-export default function QrMapPage() {
+function QrMapContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [selectedKey, setSelectedKey] = useState<LocationKey | null>(null);
@@ -333,5 +333,13 @@ export default function QrMapPage() {
         </div>
       </div>
     </SubpageLayout>
+  );
+}
+
+export default function QrMapPage() {
+  return (
+    <Suspense fallback={<div className="flex h-full items-center justify-center">Loading map…</div>}>
+      <QrMapContent />
+    </Suspense>
   );
 }
