@@ -1,3 +1,4 @@
+Early prototype of a campus navigation application. Superseded by the team Final Year Project.
 Swinburne Campus Mobile App (PART A – Alpha Release)
 
 A Semester 1 deliverable for COS40005 Computing Technology Project A.
@@ -6,7 +7,7 @@ This is Part A (the first half) of the full Final Year Project.
 It includes the Alpha version of the Swinburne Campus Mobile App — core features are implemented and publicly accessible, while advanced features will be delivered in Part B (Semester 2).
 
 📱 Live Demo (Web Preview)
-https://swinburne-campus-mobile-app.vercel.app/
+https://final-year-project-b-dx9c.vercel.app/ 
 
 (The app is still under active development, but this demo version is fully usable and available for testing.)
 
